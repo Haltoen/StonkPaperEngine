@@ -1,0 +1,13 @@
+Plan of action
+
+1. Find out how to get stock data (maybe? https://www.alphavantage.co/documentation/)
+
+2. Make nice adjustable plots (Must look good!)
+
+3. Make simple tkinter application to control background
+
+4. Continuously update PC background
+
+5. ...
+
+6. profit?
