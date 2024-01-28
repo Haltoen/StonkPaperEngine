@@ -34,7 +34,7 @@ class App(ctk.CTk):
  
         # Ticker Entry Field
         self.tickerEntry = ctk.CTkEntry(self,
-                         placeholder_text="Teja")
+                         placeholder_text="BTC-USD")
         self.tickerEntry.grid(row=0, column=1,
                             columnspan=3, padx=20,
                             pady=20, sticky="ew")
@@ -48,7 +48,7 @@ class App(ctk.CTk):
  
         # Years Entry Field
         self.timeEntry = ctk.CTkEntry(self,
-                            placeholder_text="18")
+                            placeholder_text="30")
         self.timeEntry.grid(row=1, column=1,
                            columnspan=3, padx=20,
                            pady=20, sticky="ew")
