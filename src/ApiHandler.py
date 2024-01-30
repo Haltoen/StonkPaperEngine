@@ -13,9 +13,9 @@ def interval_request (ticker: str, start: str, end : str, interval_size):
         raise
 
 
-def data_request (ticker: str, years: int, interval_size: str):
+def data_request (ticker: str, days: int, interval_size: str):
     current_date = dt.datetime.now().date()
-    start_date = current_date - dt.timedelta(days=years * 365) # this day n years ago
+    start_date = current_date - dt.timedelta(days=days) # this day n years ago
     return interval_request(ticker, start_date, current_date, interval_size)
 
 

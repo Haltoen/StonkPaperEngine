@@ -1,13 +1,11 @@
 ## application layer
 
 import customtkinter as ctk
-import tkinter as tk
 import ApiHandler as api
 import Plots as my_plt
 import os 
 import time
 import multiprocessing
-from datetime import datetime
 
  
 # Basic parameters and initializations
@@ -17,7 +15,7 @@ ctk.set_appearance_mode("System")
 # Supported themes : green, dark-blue, blue
 ctk.set_default_color_theme("green")    
  
-appWidth, appHeight = 600, 500
+appWidth, appHeight = 600, 300
 
 
 # File to store the last execution time
@@ -54,6 +52,15 @@ def schedule_plots(ticker, volume, log, data):
 
         time.sleep(60)  # Sleep for 1 minute 
 
+# converts periods entry filed to (int) days
+def string_to_days(s: str) -> int:
+    if s == "day": return 1
+    elif s == "week": return 7
+    elif s == "month": return 30
+    elif s == "6-month": return 183
+    elif s == "year": return 365
+    elif s == "5-year": return 365 * 5
+    elif s == "max": return 365*200
 
 # App Class
 class App(ctk.CTk):
@@ -77,19 +84,28 @@ class App(ctk.CTk):
                             columnspan=3, padx=20,
                             pady=20, sticky="ew")
  
-        # Years Label
+        # Period settings Label
         self.timeLabel = ctk.CTkLabel(self,
-                                     text="years")
+                                     text="Time and Granualarity")
         self.timeLabel.grid(row=1, column=0,
                            padx=20, pady=20,
                            sticky="ew")
  
-        # Years Entry Field
-        self.timeEntry = ctk.CTkEntry(self,
-                            placeholder_text="30")
-        self.timeEntry.grid(row=1, column=1,
-                           columnspan=3, padx=20,
-                           pady=20, sticky="ew")
+        # n periods field
+        self.periodsEntry = ctk.CTkOptionMenu(self,
+                            values = ["day", "week", "month", "6-month", "year", "5-year", "max"]
+                            )
+        
+        self.periodsEntry.grid(row=1, column=1, 
+                            padx=20, pady=20, sticky="ew")
+        
+        # period size field
+        self.period_sizeEntry = ctk.CTkOptionMenu(self,
+                            values = ["1m", "5m", "15m", "1h", "1d", "1wk", "1mo", "3mo"]
+                            )
+        self.period_sizeEntry.grid(row=1, column=2,
+                            padx=20, pady=20, sticky="ew")
+        
 
  
         # Choice Label
@@ -115,20 +131,21 @@ class App(ctk.CTk):
                                         padx=20, pady=20,
                                         sticky="ew")
         
+
+    
     def button_clicked(self):
         self.terminate_other_processes()
 
         ticker = self.tickerEntry.get()
-        periods = int(self.timeEntry.get())
+        periods = string_to_days(self.periodsEntry.get())
+        period_size = self.period_sizeEntry.get()
         volume = self.choice1._check_state
         log = self.choice2._check_state
-        data = api.data_request(ticker, periods, "1wk")
+        data = api.data_request(ticker, periods, period_size)
 
         # Create a process for scheduling plots 
         plot_process = multiprocessing.Process(target=schedule_plots, args=(ticker, volume, log, data))
         plot_process.start()
-        
-        return None
     
     def terminate_other_processes(self):
         current_process = multiprocessing.current_process()
@@ -136,7 +153,6 @@ class App(ctk.CTk):
             if process != current_process:
                 process.terminate()
                 process.join()  # Ensure the terminated process is cleaned up
-
 
 
 if __name__ == "__main__":
