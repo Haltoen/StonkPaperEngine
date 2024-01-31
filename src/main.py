@@ -35,18 +35,18 @@ def write_last_execution_time(current_time):
 
 
 
-def schedule_plots(ticker, volume, log, data):
-    interval_minutes = 30  # Change this to your desired interval in minutes
-    interval_seconds = interval_minutes * 60
+def schedule_plots(ticker, periods, period_size, volume, log):
+    interval_seconds = 60
     first = True
     while True:
         last_execution_time = read_last_execution_time()
         current_time = time.time()
 
         if current_time - last_execution_time >= interval_seconds or first :
+            data, ticker = api.data_request(ticker, periods, period_size)
             # update plot
             print("attempt at data retrival")
-            my_plt.simple_plot(data, volume, log)
+            my_plt.plot_as_background(data, ticker, volume, log)
             # Update last execution time
             write_last_execution_time(current_time)
 
@@ -141,10 +141,9 @@ class App(ctk.CTk):
         period_size = self.period_sizeEntry.get()
         volume = self.choice1._check_state
         log = self.choice2._check_state
-        data = api.data_request(ticker, periods, period_size)
-
+        
         # Create a process for scheduling plots 
-        plot_process = multiprocessing.Process(target=schedule_plots, args=(ticker, volume, log, data))
+        plot_process = multiprocessing.Process(target=schedule_plots, args=(ticker, periods, period_size, volume, log))
         plot_process.start()
     
     def terminate_other_processes(self):

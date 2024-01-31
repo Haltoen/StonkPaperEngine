@@ -27,22 +27,27 @@ figsize = (monitor_width / dpi_value, monitor_height / dpi_value)
 
 
 
-def plot_as_background(data, custom_style, show_volume, logarithmic):
-    # Create a new figure with the specified width and height
-    fig, axlist = mpf.plot(data, type="candle", style=custom_style, volume=show_volume, returnfig=True, figsize=figsize)
+def plot_as_background(data, ticker, show_volume, logarithmic):
+    fig, axlist = mpf.plot(data, type="candle", style=custom_style, volume=show_volume, returnfig=True, figsize=figsize, )
 
+    fig.suptitle(ticker, fontsize=20)
+
+        # Extract the latest closing price from the 'Close' column in your data
+    latest_close_price = data['Close'].iloc[-1]
+
+    # Add a text annotation under the title with the current price
+    fig.text(0.5, 0.9, f'Current Price: ${latest_close_price:.2f}', ha='center', fontsize=12)
     # Set the facecolor of the figure to be white (non-transparent)
     fig.patch.set_facecolor('white')
 
     # Set the DPI based on the specified width and height
     fig.set_dpi(dpi_value)
 
-    
-
-        # Set logarithmic scaling for the y-axis if requested
+    # Set logarithmic scaling for the y-axis if requested
     if logarithmic:
         ax = axlist[0]
         ax.set_yscale('log')
+
 
     # Save the figure as an image file
     background_image_filename = 'background_image.png'
@@ -52,6 +57,3 @@ def plot_as_background(data, custom_style, show_volume, logarithmic):
 
     return fig
 
-
-def simple_plot (data, show_volume, logarithmic):
-    plot_as_background(data, custom_style, show_volume, logarithmic)

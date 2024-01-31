@@ -12,21 +12,23 @@ def interval_request (ticker: str, start: str, end : str, interval_size):
         print(f"An error occurred: {e}")
         raise
 
+#def ticker_request ()
+
 
 def data_request (ticker: str, days: int, interval_size: str):
+
     current_date = dt.datetime.now().date()
     start_date = current_date - dt.timedelta(days=days) # this day n years ago
-    return interval_request(ticker, start_date, current_date, interval_size)
+    # request intercval data
+    data = interval_request(ticker, start_date, current_date, interval_size)
+    # Calculate daily percent change
+    
+    
+    #data['dailychange'] = data['Close'].() * 100
+    return data, ticker
 
 
-"""
-data = data_request("SPY", 20, "1wk")
-data['Close'].plot()
-plt.title("Apple Stock Prices")
-plt.show()
-"""
 
-        
 
 
 
