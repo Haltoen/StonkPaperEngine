@@ -2,33 +2,49 @@
 import datetime as dt
 import matplotlib.pyplot as plt
 import yfinance as yf
+from pytz import timezone
+
+def is_market_open(ticker):
+    ticker_data = yf.Ticker(ticker).info # retrive ticker data
+
+    if ticker_data["quoteType"] == "CRYPTOCURRENCY": return True # Crypto allways open
+    else:
+        exchange_timezone = ticker_data["timeZoneShortName"] # get stock timeZone
+        tz = timezone(exchange_timezone)
+        
+        # Assuming NYSE trading hours are from 9:30 AM to 4:00 PM
+        current_time = dt.datetime.now(tz).time()
+        market_open_time = dt.time(9, 30)
+        market_close_time = dt.time(16, 0)
+
+        return market_open_time <= current_time <= market_close_time
 
 
-def interval_request (ticker: str, start: str, end : str, interval_size):
+def interval_request (ticker: str, start: str, interval_size):
     try:
-        data = yf.download(ticker, start=start, end=end, interval=interval_size)
+        data = yf.download(ticker, start=start, interval=interval_size)
         return data
     except Exception as e:
         print(f"An error occurred: {e}")
         raise
 
-#def ticker_request ()
-
 
 def data_request (ticker: str, days: int, interval_size: str):
 
-    current_date = dt.datetime.now().date()
-    start_date = current_date - dt.timedelta(days=days) # this day n years ago
+    current_date = dt.datetime.now(tz=timezone("UTC")).date()
+    start_date = dt.datetime.combine(current_date - dt.timedelta(days=days-1), dt.time())
+    print(current_date)
+    print(start_date)
     # request intercval data
-    data = interval_request(ticker, start_date, current_date, interval_size)
+    data = interval_request(ticker, start_date, interval_size)
     # Calculate daily percent change
-    
-    
-    #data['dailychange'] = data['Close'].() * 100
-    return data, ticker
+
+    return data
 
 
 
-
-
-
+"""
+print(yf.Ticker("btc-usd").info["timeZoneShortName"])
+print(yf.Ticker("btc-usd").info["priceHint"])
+print(yf.Ticker("eth-btc").info["quoteType"])
+"""

@@ -36,14 +36,15 @@ def write_last_execution_time(current_time):
 
 
 def schedule_plots(ticker, periods, period_size, volume, log):
-    interval_seconds = 60
+    interval_seconds = 30
     first = True
     while True:
         last_execution_time = read_last_execution_time()
         current_time = time.time()
 
-        if current_time - last_execution_time >= interval_seconds or first :
-            data, ticker = api.data_request(ticker, periods, period_size)
+        if (current_time - last_execution_time >= interval_seconds and api.is_market_open(ticker)) or first :
+            # get data
+            data = api.data_request(ticker, periods, period_size)
             # update plot
             print("attempt at data retrival")
             my_plt.plot_as_background(data, ticker, volume, log)
@@ -132,7 +133,6 @@ class App(ctk.CTk):
                                         sticky="ew")
         
 
-    
     def button_clicked(self):
         self.terminate_other_processes()
 

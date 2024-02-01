@@ -14,8 +14,6 @@ colors = mpf.make_marketcolors(up="#00ff00",
 
 custom_style = mpf.make_mpf_style(base_mpf_style='nightclouds', marketcolors=colors)
 
-data = api.data_request("BTC-USD", 20, "1wk")
-
 # Get information about the primary monitor
 primary_monitor = get_monitors()[0]
 
