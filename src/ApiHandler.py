@@ -5,7 +5,11 @@ import yfinance as yf
 from pytz import timezone
 
 def is_market_open(ticker):
-    ticker_data = yf.Ticker(ticker).info # retrive ticker data
+    try: # test connection
+        ticker_data = yf.Ticker(ticker).info # retrive ticker data
+    except Exception as e:
+        print(f"An error occurred: {e}") 
+        return False
 
     if ticker_data["quoteType"] == "CRYPTOCURRENCY": return True # Crypto allways open
     else:
@@ -21,12 +25,12 @@ def is_market_open(ticker):
 
 
 def interval_request (ticker: str, start: str, interval_size):
-    try:
+    try: # test connection
         data = yf.download(ticker, start=start, interval=interval_size)
         return data
     except Exception as e:
-        print(f"An error occurred: {e}")
-        raise
+        print(f"An error occurred: {e}") 
+        return False
 
 
 def data_request (ticker: str, days: int, interval_size: str):
@@ -37,8 +41,7 @@ def data_request (ticker: str, days: int, interval_size: str):
     print(start_date)
     # request intercval data
     data = interval_request(ticker, start_date, interval_size)
-    # Calculate daily percent change
-
+    
     return data
 
 
